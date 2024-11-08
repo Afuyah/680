@@ -1,0 +1,105 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+
+    <h3 class="text-center mb-4">User Management</h3>
+    
+    <a href="{{ url_for('auth.add_user') }}" class="btn btn-primary mb-3">Add User</a>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered" id="userTable">
+            <thead class="thead-light">
+                <tr>
+                    
+                    <th>Username</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.role.name }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center">No users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+<!-- Include jQuery and DataTables JS/CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Initialize DataTables
+    $('#userTable').DataTable({
+        searching: true, // Enable search
+        paging: true, // Enable pagination
+        order: [], // Default order (empty for no initial order)
+        lengthMenu: [5, 10, 25, 50], // Options for number of entries per page
+        language: {
+            search: "Search Users:", // Customize search box placeholder
+            lengthMenu: "Show _MENU_ users per page", // Customize entries menu
+        }
+    });
+});
+</script>
+
+<style>
+    body {
+        background-color: #f0f4f8; /* Light background color */
+        font-family: 'Montserrat', sans-serif; /* Modern font */
+    }
+
+    h3 {
+        color: #343a40; /* Darker shade for heading */
+        font-weight: 600; /* Slightly bolder for emphasis */
+    }
+
+    .table-responsive {
+        margin-top: 20px; /* Add some margin to the top */
+    }
+
+    table {
+        border-radius: 8px; /* Rounded corners for the table */
+        overflow: hidden; /* Ensure corners are rounded */
+    }
+
+    .table th {
+        background-color: #007bff; /* Primary color for table header */
+        color: #fff; /* White text for header */
+        text-align: center; /* Centered header text */
+    }
+
+    .table td {
+        text-align: center; /* Centered cell text */
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f2f9fc; /* Lighter background for odd rows */
+    }
+
+    .table-striped tbody tr:hover {
+        background-color: #e9ecef; /* Highlight row on hover */
+    }
+
+    .btn-primary {
+        border-radius: 30px; /* Rounded button */
+        padding: 10px 20px; /* Padding for button */
+    }
+
+    @media (max-width: 768px) {
+        .btn-primary {
+            width: 100%; /* Full width button on small screens */
+            margin-bottom: 10px; /* Margin for spacing */
+        }
+    }
+</style>
+{% endblock %}

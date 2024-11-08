@@ -1,0 +1,113 @@
+/* Base styling */
+body {
+    background-color: #f8f9fb; /* Light background color */
+    font-family: 'Montserrat', sans-serif;
+    color: #343a40; /* Dark text color for contrast */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Sidebar styles */
+.sidebar {
+    height: 100vh;
+    width: 300px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #ffffff; /* Light background for the sidebar */
+    padding-top: 20px;
+    transition: transform 0.3s ease-in-out;
+    overflow-y: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 100; /* Ensure sidebar is above content */
+}
+
+.sidebar h3 {
+    color: #343a40;
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+    padding: 10px 0;
+}
+
+.sidebar a {
+    display: block;
+    padding: 12px 20px;
+    color: #343a40; /* Dark text color */
+    text-decoration: none;
+    font-size: 1rem;
+    border-radius: 4px;
+    margin: 5px 0; /* Space between links */
+    transition: background 0.3s, color 0.3s;
+}
+
+.sidebar a:hover, .sidebar a.active {
+    background-color: #e9ecef; /* Light gray for hover */
+    color: #007bff;
+}
+
+/* Toggle button for small screens */
+.sidebar-toggle {
+    display: none;
+    font-size: 1.5rem;
+    color: #222;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+/* Main content styles */
+
+.content {
+    margin-left: 300px;
+    
+    transition: margin-left 0.3s;
+    max-width: calc(100% - 300px); /* Occupy full width minus sidebar on large screens */
+}
+/* Sidebar hidden for small screens */
+.sidebar-hidden {
+    transform: translateX(-100%);
+}
+
+.sidebar-visible .content {
+    margin-left: 0;
+}
+
+/* Footer */
+footer {
+    background-color: #f8f9fb;
+    color: #343a40;
+    padding: 15px 0;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 250px;
+        transform: translateX(-100%);
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 5px; /* Slight padding for breathing room on small screens */
+        max-width: 100%; /* Full width on small screens */
+    }
+
+    .sidebar-toggle {
+        display: block;
+    }
+
+    /* Show sidebar on toggle */
+    .sidebar-visible .sidebar {
+        transform: translateX(0);
+    }
+
+    .sidebar-visible .content {
+        margin-left: 0; /* Content takes full width when sidebar is visible on small screens */
+    }
+}

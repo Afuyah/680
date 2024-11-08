@@ -1,0 +1,147 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+    <div class="adjust-stock-form">
+        <h1>Adjust Stock for {{ product.name }} (Admin)</h1>
+        <form method="POST" id="stockForm">
+            <div class="form-group">
+                <label for="adjustment_quantity">Input Quantity:</label>
+                <input type="number" id="adjustment_quantity" name="adjustment_quantity" min="1" required>
+                <small class="feedback" id="quantityFeedback"></small>
+            </div>
+            
+            <div class="form-group">
+                <label for="adjustment_type">Adjustment Type:</label>
+                <select id="adjustment_type" name="adjustment_type" required>
+                    {% for type in allowed_types %}
+                        <option value="{{ type }}">{{ type.capitalize() }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit</button>
+        </form>
+    </div>
+
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Main container styling */
+        .adjust-stock-form {
+            width: 100%;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Form title styling */
+        .adjust-stock-form h1 {
+            text-align: center;
+            color: #444;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Form group styling */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Input field styling */
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #3498db;
+            box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+        }
+
+        /* Feedback for validation */
+        .feedback {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none; /* Initially hidden */
+        }
+
+        /* Submit button styling */
+        .submit-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: #3498db;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+
+    {% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const quantityInput = document.getElementById('adjustment_quantity');
+            const quantityFeedback = document.getElementById('quantityFeedback');
+
+            // Quantity validation
+            quantityInput.addEventListener('input', function () {
+                if (quantityInput.value < 1) {
+                    quantityFeedback.textContent = 'Quantity must be greater than zero.';
+                    quantityFeedback.style.display = 'block';
+                    quantityInput.style.borderColor = '#e74c3c';
+                } else {
+                    quantityFeedback.style.display = 'none';
+                    quantityInput.style.borderColor = '';
+                }
+            });
+
+            // Form submission with validations
+            const form = document.getElementById('stockForm');
+            form.addEventListener('submit', function (event) {
+                let valid = true;
+
+                if (quantityInput.value < 1) {
+                    quantityFeedback.textContent = 'Quantity must be greater than zero.';
+                    quantityFeedback.style.display = 'block';
+                    quantityInput.style.borderColor = '#e74c3c';
+                    valid = false;
+                }
+
+                if (!valid) {
+                    event.preventDefault(); // Stop form submission if invalid
+                }
+            });
+        });
+    </script>
+    {% endblock %}
+{% endblock %}

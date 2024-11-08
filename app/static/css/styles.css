@@ -1,0 +1,519 @@
+:root {
+    --background-color: #f0f4f8; /* Light background */
+    --font-family: 'Arial', sans-serif; /* Modern font */
+    --primary-color: #4CAF50; /* Green color for borders */
+    --secondary-color: #007bff; /* Added secondary color for other uses */
+   
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: var(--font-family);
+    line-height: 1.6; /* Improve text readability */
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack children vertically */
+}
+
+body, .modal-title, .modal-body {
+    font-family: 'Roboto', sans-serif; /* Use Roboto font */
+}
+
+/* Fluid Container Styling */
+.container {
+    max-width: 1400px; /* Increased max width for larger screens */
+    width: calc(100% - 20px); /* Full width minus the margins (10px on each side) */
+    border: 1px solid var(--primary-color); /* Green border */
+    padding: 10px;
+    border-radius: var(--border-radius);
+    background: inherit; /* White background for the container */
+
+    margin: 10px auto; /* 10px margin for spacing from edges */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px; /* Reduce padding on smaller screens */
+        width: calc(100% - 20px); /* Maintain margin on smaller screens */
+    }
+}
+
+
+        .login-container {
+            background-color: inherit; /* White background for the form */
+            max-width: 600px; /* Limit max width */
+            width: 100%; /* Full width on smaller screens */
+            
+           
+            padding: 2rem;
+            margin: auto;
+            margin-top: 10vh;
+            animation: fadeIn 0.5s; /* Fade-in animation for the container */
+            transition: transform 0.3s ease; /* Smooth transform transition */
+        }
+
+        .login-container:hover {
+            transform: translateY(-5px); /* Slight lift effect on hover */
+        }
+
+        /* Button Styles */
+        .btn-custom {
+            background-color: #007bff; /* Primary button color */
+            color: white; /* Button text color */
+            border: none; /* No border */
+            padding: 12px 20px; /* Padding */
+            border-radius: 30px; /* More rounded corners */
+            font-size: 1rem; /* Font size */
+            transition: background-color 0.3s ease, transform 0.2s, box-shadow 0.2s; /* Smooth transition */
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+        }
+
+        /* Input Styles */
+        .form-control {
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: none; /* Remove default shadow */
+            border: 1px solid #ccc; /* Light border */
+            transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transition */
+        }
+
+        .form-control:focus {
+            border-color: #007bff; /* Blue border on focus */
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Light blue shadow */
+            background-color: #f0f8ff; /* Light background on focus */
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background-color: #ffff; /* Success color */
+            color: #222;
+            font-size: 1.2rem;
+            border-radius: 10px; /* Rounded corners */
+        }
+
+        .modal-content i {
+            font-size: 3rem;
+            color: #ffc107;
+            animation: bounce 1s infinite; /* Bouncing icon animation */
+        }
+
+        .modal-error {
+            background-color: #dc3545; /* Error color */
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 10px; /* Rounded corners */
+        }
+
+        .modal-error i {
+            font-size: 3rem;
+            color: #fff;
+            animation: bounce 1s infinite; /* Bouncing icon animation */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+/* Category List Styles */
+.category-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    scrollbar-width: thin; /* Custom scrollbar for Firefox */
+    scrollbar-color: var(--primary-color) #f0f4f8; /* Custom scrollbar color */
+}
+
+/* Custom Scrollbar for WebKit Browsers */
+.category-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.category-list::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+}
+
+.category-list::-webkit-scrollbar-track {
+    background: #f0f4f8;
+}
+
+/* Category Items */
+.category-item {
+    padding: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    border-bottom: 1px solid #eee;
+    display: flex; /* Align items */
+    justify-content: space-between; /* Space between items */
+    align-items: center; /* Center items vertically */
+}
+
+.category-item:hover,
+.category-item:focus {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateX(5px); /* Add subtle hover effect */
+}
+
+
+/* Product Container Styles */
+.product-container {
+    background-color: #f4f7fa;
+    padding: 10px;
+    border-radius: 8px;
+    max-height: 600px;
+    overflow: hidden;
+}
+
+/* Scrollable Product List */
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+/* Individual Product Item Styles */
+.product-item {
+    flex: 1 1 calc(33% - 10px); /* Default layout - 3 cards per row */
+    min-height: 150px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Hover Effects for Card */
+.product-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+/* Product Text Styles */
+.product-title {
+    font-weight: bold;
+    margin-bottom: 8px; /* Increased space below title */
+    font-size: 1.2rem; /* Larger title size */
+    transition: color 0.2s, transform 0.2s; /* Smooth transition */
+}
+
+.product-title:hover {
+    color: var(--primary-color); /* Change color on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.product-price {
+    color: var(--secondary-color);
+    font-weight: bold;
+    font-size: 1.1rem; /* Slightly larger font for price */
+    transition: color 0.2s, transform 0.2s; /* Smooth transition */
+}
+
+.product-price:hover {
+    color: var(--primary-color); /* Change color on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.product-stock {
+    color: #6c757d; /* Color for stock information */
+}
+
+/* Badge for Stock Levels */
+.badge {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 5px 10px; /* Padding inside badge */
+    border-radius: 12px; /* Rounded corners for badge */
+    position: absolute; /* Positioned at the top right */
+    top: 10px;
+    right: 10px;
+    font-size: 0.75rem; /* Smaller font size for badge */
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .product-item {
+        flex: 1 0 calc(45% - 20px); /* Two cards on medium screens */
+    }
+}
+
+@media (max-width: 400px) {
+    .product-item {
+        flex: 1 0 calc(100% - 20px); /* One card on small screens */
+    }
+}
+
+
+
+/* Cart Styles */
+.cart-container {
+    position: sticky;
+    top: 0;
+    background-color: white; /* Light background for cart */
+    z-index: 10; /* Ensure it appears above other elements */
+    border: 1px solid #e0e0e0; /* Light border for subtle separation */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    padding: 15px; /* Padding inside the cart */
+}
+
+.cart-items {
+    max-height: 600px; /* Increased height before scrolling starts */
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar for Cart Items */
+.cart-items::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cart-items::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+}
+
+.cart-items::-webkit-scrollbar-track {
+    background: #f0f4f8;
+}
+
+/* Cart Item Layout */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px; /* Add padding for better spacing */
+    border-bottom: 1px solid #e0e0e0; /* Separator for cart items */
+}
+
+/* Cart Item Hover Effect */
+.cart-item:hover {
+    background-color: #f7f7f7; /* Light gray background on hover */
+    transition: background-color 0.2s ease; /* Smooth transition */
+}
+
+/* Total Amount Styles */
+.cart-total {
+    font-size: 2.5em; /* Larger font size for visibility */
+    font-weight: bold; /* Bold for emphasis */
+    color: var(--primary-color); /* Use primary color */
+    margin-top: 15px; /* Space above the total */
+    text-align: right; /* Align to the right */
+}
+
+/* Button Styles */
+.btn {
+    transition: background-color 0.2s, transform 0.2s;
+    border-radius: 5px;
+    padding: 10px 15px;
+    color: white;
+    cursor: pointer; /* Pointer on button hover */
+    font-weight: 600; /* Bold text for buttons */
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-success {
+    background-color: var(--secondary-color);
+}
+
+.btn:hover {
+    background-color: var(--secondary-color); /* Change hover color to secondary */
+    transform: scale(1.02); /* Slightly enlarge on hover */
+}
+
+.btn:active {
+    transform: scale(0.95); /* Slightly shrink on click */
+}
+
+.btn:focus {
+    outline: 2px solid var(--primary-color); /* Visible outline on focus */
+    outline-offset: 2px; /* Offset the outline for better visibility */
+}
+
+/* Alert Styles */
+.alert {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(0, 123, 255, 0.1); /* Light background for alerts */
+    border: 1px solid rgba(0, 123, 255, 0.2); /* Alert border */
+}
+
+/* Loading Spinner */
+.spinner {
+    border: 4px solid var(--primary-color);
+    border-top: 4px solid transparent;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    display: none; /* Initially hidden */
+}
+
+.spinner.show {
+    display: block; /* Show when class is applied */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .product-item {
+        flex: 1 0 calc(48% - 20px); /* Two cards on smaller screens */
+    }
+}
+
+@media (max-width: 420px) {
+    .product-item {
+        flex: 1 0 calc(100% - 20px); /* Full width on extra small screens */
+    }
+}
+
+/* Cart Item Quantity Badge */
+.cart-item-quantity {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    padding: 5px 8px;
+    margin-left: 10px; /* Space between text and badge */
+    font-size: 0.9em; /* Slightly smaller font */
+}
+
+
+/* Additional Styling */
+..wrapper {
+    flex: 1; /* Allow wrapper to grow and fill available space */
+    display: flex;
+    flex-direction: column; /* Stack content and footer */
+}
+
+.content {
+    flex: 1;
+}
+
+.welcome-title {
+    font-size: 2.5rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.welcome-description {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.btn-custom {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.btn-custom:hover {
+    background-color: #0056b3; /* Darker on hover */
+}
+
+.footer {
+    background-color: inherit; /* Footer background */
+    color: var(--text-color);
+    text-align: center; /* Center align text */
+    padding: 15px 0; /* Padding for footer */
+    border-top: 1px solid #dee2e6; /* Top border */
+}
+
+.footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+
+.content {
+    flex: 1; /* This allows the content to take up remaining space */
+}
+/* Navbar Styling */
+
+
+.navbar-light .navbar-nav .nav-link {
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for color */
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    background-color: var(--hover-color); /* Light green on hover */
+    color: var(--primary-color); /* Change text color on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+.navbar-light .navbar-nav .nav-item.active .nav-link {
+    color: var(--primary-color); /* Active link color */
+    font-weight: bold; /* Bold text for active links */
+}
+
+.navbar-light .navbar-toggler {
+    border-color: var(--primary-color); /* Toggler border color */
+}
+
+.navbar-light .navbar-toggler:hover {
+    background-color: var(--hover-color); /* Toggler hover color */
+}
+
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-nav {
+        text-align: center; /* Center text in mobile view */
+    }
+
+    .navbar-nav .nav-item {
+        margin-bottom: 10px; /* Space between nav items */
+    }
+}

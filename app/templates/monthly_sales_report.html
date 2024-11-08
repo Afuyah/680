@@ -1,0 +1,154 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+
+    <h4 class="text-center mb-4 display-5 " style="color: #007bff;">Sales Report for {{ sales[0].date.strftime('%B %Y') if sales else 'N/A' }}</h4>
+
+    <form method="GET" action="{{ url_for('sales.monthly_sales_report') }}" class="mb-4">
+        <div class="form-group">
+            <label for="month" class="font-weight-bold" style="color: #495057;">Select Month:</label>
+            <input type="month" name="month" class="form-control border-primary" value="{{ request.args.get('month', datetime.today().strftime('%Y-%m')) }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block mt-3 shadow">Generate Report</button>
+    </form>
+
+    <!-- Summary Cards -->
+    <div class="summary card-deck mb-4">
+        <div class="card text-white bg-success shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Sales</h5>
+                <p class="card-text display-5 font-weight-bold">Ksh {{ total_sales }}</p>
+            </div>
+        </div>
+        <div class="card text-white bg-info shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Transactions</h5>
+                <p class="card-text display-5 font-weight-bold">{{ total_transactions }}</p>
+            </div>
+        </div>
+        <div class="card text-white bg-warning shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Profit</h5>
+                <p class="card-text display-5 font-weight-bold">Ksh {{ total_profit }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Table -->
+    {% if sales %}
+    <div class="table-responsive shadow-sm rounded-lg">
+        <table id="salesTable" class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Profit</th>
+                    <th>Items Sold</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales %}
+                <tr>
+                    <td>{{ sale.id }}</td>
+                    <td>{{ sale.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>Ksh {{ sale.total | round(2) }}</td>
+                    <td>Ksh {{ sale.profit | round(2) }}</td>
+                    <td>
+                        <ul class="list-unstyled">
+                            {% for item in sale.cart_items %}
+                            <li>{{ item.product.name }} ({{ item.quantity }})</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-danger font-weight-bold">No sales data available for the selected month.</p>
+    {% endif %}
+
+    <!-- Navigation Links -->
+    <div class="mt-5 text-center">
+        <a href="{{ url_for('sales.daily_sales_report') }}" class="btn btn-outline-secondary btn-lg mx-2">View Daily Report</a>
+        <a href="{{ url_for('sales.filter_sales_report') }}" class="btn btn-outline-secondary btn-lg mx-2">Filter Sales Report</a>
+    </div>
+</div>
+
+<!-- Include jQuery and DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#salesTable').DataTable({
+            "ordering": true,
+            "paging": true,
+            "searching": true,
+            "info": true,
+            "language": {
+                "search": "Filter records:",
+                "lengthMenu": "Display _MENU_ records per page"
+            }
+        });
+    });
+</script>
+
+
+<style>
+  
+
+    /* Headings and Labels */
+    h1, label {
+        color: #007bff;
+    }
+
+    /* Summary Card Styling */
+    .summary .card {
+        border-radius: 10px;
+        transition: transform 0.3s;
+    }
+
+    .summary .card:hover {
+        transform: scale(1.05);
+    }
+
+    /* Table Styling */
+    #salesTable {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    #salesTable thead th {
+        background-color: #007bff;
+        color: #ffffff;
+        font-weight: 600;
+    }
+    #salesTable tbody tr:hover {
+        background-color: #e3f2fd;
+    }
+
+    /* DataTables custom input styling */
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #ced4da;
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-size: 14px;
+    }
+    .dataTables_wrapper .dataTables_filter input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Button Styling */
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+</style>
+{% endblock %}

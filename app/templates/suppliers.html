@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}Suppliers {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center">Add Supplier</h3>
+
+    <!-- Feedback Messages -->
+    <div id="successMessage" class="alert alert-success d-none" role="alert">
+        Supplier added successfully!
+    </div>
+    <div id="errorMessage" class="alert alert-danger d-none" role="alert">
+        Error adding supplier: <span id="errorMessageText"></span>
+    </div>
+
+    <div class="filter-section mb-4">
+        <label for="productSelect">Select Product:</label>
+        <select id="productSelect" class="form-select" onchange="toggleAddSupplierModal()">
+            <option value="">Select a product</option>
+            {% for product in products %}
+            <option value="{{ product.id }}">{{ product.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Modal for adding supplier -->
+    <div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addSupplierModalLabel">Add Supplier</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSupplierForm" onsubmit="submitSupplier(event)">
+                        <div class="mb-3">
+                            <label for="supplierName" class="form-label">Supplier Name</label>
+                            <input type="text" class="form-control" id="supplierName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplierPhone" class="form-label">Supplier Phone</label>
+                            <input type="text" class="form-control" id="supplierPhone" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number." required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Add Supplier</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DataTable for displaying suppliers -->
+    <div class="table-responsive mt-4">
+        <table class="table table-striped table-hover" id="suppliers-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Suppliers will be populated here via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Custom Styling for the Supplier Page -->
+<style>
+    .container {
+        background-color: #f8f9fa; /* Light background for better contrast */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    h3 {
+        font-family: 'Arial', sans-serif;
+        color: #343a40;
+        margin-bottom: 20px;
+    }
+
+    .alert {
+        margin-bottom: 20px;
+    }
+
+    .form-select {
+        margin-bottom: 20px;
+    }
+
+    .modal-header {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .modal-body {
+        background-color: #ffffff;
+    }
+</style>
+
+<!-- Include jQuery, Bootstrap, and DataTables JS/CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+
+<script>
+    // Function to toggle the Add Supplier modal
+    function toggleAddSupplierModal() {
+        const productSelect = document.getElementById('productSelect');
+        const addSupplierModal = new bootstrap.Modal(document.getElementById('addSupplierModal'));
+        
+        // Open the modal if a product is selected
+        if (productSelect.value) {
+            addSupplierModal.show();
+        }
+    }
+
+    // Function to submit supplier data
+    function submitSupplier(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const supplierName = document.getElementById('supplierName').value;
+        const supplierPhone = document.getElementById('supplierPhone').value;
+        const productId = document.getElementById('productSelect').value;
+
+        // Prepare data to send
+        const supplierData = {
+            name: supplierName,
+            phone: supplierPhone,
+            product_id: productId // Include product ID if necessary
+        };
+
+        // Send POST request to add supplier
+        fetch('/supplier/api/add_supplier', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(supplierData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to add supplier');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Close the modal
+            const addSupplierModal = new bootstrap.Modal(document.getElementById('addSupplierModal'));
+            addSupplierModal.hide(); // Hide the modal
+
+            // Reset the form
+            document.getElementById('addSupplierForm').reset();
+
+            // Refresh the supplier table
+            fetchSuppliers();
+
+            // Show success message
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.remove('d-none');
+            setTimeout(() => successMessage.classList.add('d-none'), 3000); // Hide after 3 seconds
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            
+            // Show error message
+            const errorMessage = document.getElementById('errorMessage');
+            const errorMessageText = document.getElementById('errorMessageText');
+            errorMessageText.textContent = error.message;
+            errorMessage.classList.remove('d-none');
+            setTimeout(() => errorMessage.classList.add('d-none'), 3000); // Hide after 3 seconds
+        });
+    }
+
+    // Function to fetch and display suppliers
+    function fetchSuppliers() {
+        fetch('/supplier/api/suppliers') // Fetch from the API
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('suppliers-table').querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                data.forEach(supplier => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${supplier.name}</td>
+                        <td>${supplier.phone || 'N/A'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Initialize DataTable after populating data
+                $('#suppliers-table').DataTable({
+                    searching: true,
+                    paging: true,
+                    ordering: true,
+                    language: {
+                        searchPlaceholder: "Search suppliers...",
+                        search: ""
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching suppliers:', error);
+            });
+    }
+
+    // Initial fetch of suppliers when the page loads
+    document.addEventListener('DOMContentLoaded', fetchSuppliers);
+</script>
+{% endblock %}

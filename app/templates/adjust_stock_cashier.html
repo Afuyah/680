@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 class="mb-4 text-center">Adjust Stock for <strong>{{ product.name }}</strong> (Cashier)</h1>
+    <form method="POST" class=" p-5  ">
+        <div class="mb-4">
+            <label for="adjustment_quantity" class="form-label">Adjustment Quantity:</label>
+            <input type="number" id="adjustment_quantity" name="adjustment_quantity" required class="form-control" placeholder="Enter quantity">
+        </div>
+
+        <div class="mb-4">
+            <label for="adjustment_type" class="form-label">Adjustment Type:</label>
+            <select id="adjustment_type" name="adjustment_type" class="form-select" required>
+                <option value="" disabled selected>Select Adjustment Type</option>
+                {% for type in allowed_types %}
+                    <option value="{{ type }}">{{ type.capitalize() }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="change_reason" class="form-label">Reason for Change:</label>
+            <input type="text" id="change_reason" name="change_reason" maxlength="200" class="form-control" placeholder="Optional">
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+
+
+<!-- JavaScript for enhanced interaction -->
+<script>
+    // Select elements
+    const form = document.querySelector('form');
+    const adjustmentQuantityInput = document.getElementById('adjustment_quantity');
+    const adjustmentTypeSelect = document.getElementById('adjustment_type');
+
+    // Function to validate form inputs
+    function validateForm(event) {
+        let valid = true;
+
+        // Validate Adjustment Quantity
+        const adjustmentQuantity = adjustmentQuantityInput.value;
+        if (adjustmentQuantity <= 0) {
+            alert('Please enter a valid adjustment quantity greater than zero.');
+            valid = false;
+        }
+
+        // Validate Adjustment Type
+        const adjustmentType = adjustmentTypeSelect.value;
+        if (!adjustmentType) {
+            alert('Please select an adjustment type.');
+            valid = false;
+        }
+
+        if (!valid) {
+            event.preventDefault(); // Prevent form submission
+        }
+    }
+
+    // Add event listener for form submission
+    form.addEventListener('submit', validateForm);
+</script>
+
+
+{% endblock %}

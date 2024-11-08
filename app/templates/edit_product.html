@@ -1,0 +1,93 @@
+{% extends "admin_base.html" %}
+{% block content %}
+<div class="edit-product-container">
+    <h2 class="edit-product-title">Edit Product: {{ product.name }}</h2>
+    <form method="POST" action="{{ url_for('stock.edit_product', id=product.id) }}">
+        <div class="form-group">
+            <label for="name">Product Name:</label>
+            <input type="text" id="name" name="name" value="{{ product.name }}" required class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label for="selling_price">Selling Price (Ksh):</label>
+            <input type="number" id="selling_price" name="selling_price" value="{{ product.selling_price }}" step="0.50" required class="form-control">
+        </div>
+       
+        <div class="form-group">
+            <label for="category">Category:</label>
+            <select id="category" name="category" required class="form-control">
+                {% for category in categories %}
+                <option value="{{ category.id }}" {% if category.id == product.category_id %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Update Product</button>
+        <a href="{{ url_for('stock.products') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<style>
+    /* Edit Product Container */
+    .edit-product-container {
+        background-color: #ffffff; /* White background for the form */
+        border-radius: 8px; /* Rounded corners */
+        padding: 20px; /* Padding around the form */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        max-width: 600px; /* Maximum width of the form */
+        margin: 20px auto; /* Center the form */
+    }
+
+    /* Edit Product Title */
+    .edit-product-title {
+        font-size: 1.8em; /* Larger title font */
+        margin-bottom: 20px; /* Space below the title */
+        color: #343a40; /* Dark text color */
+    }
+
+    /* Form Group Styles */
+    .form-group {
+        margin-bottom: 15px; /* Space between form groups */
+    }
+
+    /* Input and Select Styles */
+    .form-control {
+        width: 100%; /* Full width inputs */
+        padding: 10px; /* Padding for inputs */
+        border: 1px solid #ced4da; /* Light border */
+        border-radius: 5px; /* Rounded corners */
+        transition: border-color 0.2s; /* Smooth border transition */
+    }
+
+    .form-control:focus {
+        border-color: #007bff; /* Highlight border on focus */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Light shadow on focus */
+    }
+
+    /* Button Styles */
+    .btn {
+        margin-right: 10px; /* Space between buttons */
+        padding: 10px 15px; /* Button padding */
+        border-radius: 5px; /* Rounded corners */
+        text-decoration: none; /* Remove underline */
+        color: white; /* Button text color */
+        transition: background-color 0.2s; /* Button hover transition */
+    }
+
+    .btn-primary {
+        background-color: #007bff; /* Primary button color */
+    }
+
+    .btn-primary:hover {
+        background-color: rgba(0, 123, 255, 0.8); /* Darker primary button on hover */
+    }
+
+    .btn-secondary {
+        background-color: #6c757d; /* Secondary button color */
+    }
+
+    .btn-secondary:hover {
+        background-color: rgba(108, 117, 125, 0.8); /* Darker secondary button on hover */
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Logs{% endblock %}
+
+{% block content %}
+
+
+    <h1 class="text-center font-weight-bold text-primary mb-4">Stock Logs</h1>
+    <div class="table-responsive shadow-sm rounded">
+        <table id="stockLogTable" class="table table-striped table-hover table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Product Name</th> <!-- Changed from Product ID to Product Name -->
+                    <th>User Name</th> <!-- Changed from User ID to User Name -->
+                    <th>Date</th>
+                    <th>Previous Stock</th>
+                    <th>New Stock</th>
+                    <th>Adjustment Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Stock log entries will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+
+<!-- Custom Styling for Stock Logs Page -->
+<style>
+    /* Title Styling */
+    h1 {
+        font-size: 1.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Table Styling */
+    .table {
+        background-color: #ffffff;
+    }
+    .table thead {
+        background-color: #007bff;
+        color: #ffffff;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    /* DataTable Pagination and Search */
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #ced4da;
+        border-radius: 20px;
+        padding: 5px 15px;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.4em 0.8em;
+        margin: 0 3px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #007bff;
+        color: #ffffff !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #007bff;
+        color: #ffffff !important;
+    }
+</style>
+
+<!-- Include jQuery, DataTables, and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable with AJAX to fetch log data
+        $('#stockLogTable').DataTable({
+            ajax: {
+                url: '/stock/api/stock-logs', // Adjusted endpoint to fetch JSON data
+                dataSrc: 'stock_logs' // Adjusts for the JSON structure
+            },
+            columns: [
+                { data: 'id' },
+                { data: 'product_name' }, // Changed from product_id to product_name
+                { data: 'user_name' }, // Changed from user_id to user_name
+                { data: 'date' },
+                { data: 'previous_stock' },
+                { data: 'new_stock' },
+                { data: 'adjustment_type' }
+            ],
+            order: [[0, 'desc']], // Order by ID descending
+            language: {
+                searchPlaceholder: "Search logs...",
+                search: ""
+            }
+        });
+    });
+</script>
+
+{% endblock %}

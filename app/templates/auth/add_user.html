@@ -1,0 +1,111 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Add User {% endblock %}
+
+{% block content %}
+<div class="registration-container">
+    <h3 class="text-center">Add User</h3>
+    <form method="POST" action="{{ url_for('auth.add_user') }}" class="mt-4">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Username" required aria-label="Username">
+        </div>
+        <div class="form-group">
+            <label for="password"> Secure Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required aria-label="Password" aria-describedby="passwordStrength">
+            <!-- Password Strength Meter -->
+            <div id="passwordStrength" class="text-muted"></div>
+        </div>
+        <div class="form-group">
+            <label for="role">Select Role</label>
+            <select id="role" name="role" class="form-control" required aria-label="Select Role">
+                <option value="" disabled selected>Select Role</option>
+                <option value="admin">Admin</option>
+                <option value="cashier">Cashier</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Add User</button>
+    </form>
+    <div class="text-center mt-3">
+        <a href="{{ url_for('auth.user_management') }}">Back to User Management</a>
+    </div>
+</div>
+
+<style type="text/css">
+    /* Registration Container */
+    .registration-container {
+        background-color: #ffffff; /* White background for the form */
+        border-radius: 8px; /* Rounded corners */
+        padding: 20px; /* Padding around the form */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        max-width: 400px; /* Maximum width of the form */
+        margin: 50px auto; /* Center the form */
+    }
+
+    /* Form Title */
+    .registration-container h2 {
+        color: #343a40; /* Dark text color */
+        margin-bottom: 20px; /* Space below the title */
+    }
+
+    /* Input Styles */
+    .form-control {
+        width: 100%; /* Full width inputs */
+        padding: 10px; /* Padding for inputs */
+        border: 1px solid #ced4da; /* Light border */
+        border-radius: 5px; /* Rounded corners */
+        transition: border-color 0.2s; /* Smooth border transition */
+    }
+
+    .form-control:focus {
+        border-color: #007bff; /* Highlight border on focus */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Light shadow on focus */
+    }
+
+    /* Button Styles */
+    .btn {
+        margin-top: 15px; /* Space above buttons */
+        padding: 10px 15px; /* Button padding */
+        border-radius: 5px; /* Rounded corners */
+        text-decoration: none; /* Remove underline */
+        color: white; /* Button text color */
+        transition: background-color 0.2s; /* Button hover transition */
+    }
+
+    .btn-primary {
+        background-color: #007bff; /* Primary button color */
+        width: 100%; /* Full width button */
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3; /* Darken on hover */
+    }
+
+    /* Password Strength Meter */
+    #passwordStrength {
+        margin-top: 5px; /* Space above the strength indicator */
+        font-size: 0.9em; /* Slightly smaller font */
+    }
+</style>
+
+<script>
+    // Password Strength Indicator
+    const passwordInput = document.getElementById('password');
+    const passwordStrength = document.getElementById('passwordStrength');
+
+    passwordInput.addEventListener('input', () => {
+        const value = passwordInput.value;
+        let strength = 'Weak';
+
+        if (value.length >= 8) {
+            strength = 'Medium';
+        }
+        if (value.match(/[A-Z]/) && value.match(/[0-9]/) && value.length >= 10) {
+            strength = 'Strong';
+        }
+
+        passwordStrength.textContent = `Password Strength: ${strength}`;
+        passwordStrength.style.color = strength === 'Weak' ? 'red' : strength === 'Medium' ? 'orange' : 'green';
+    });
+</script>
+{% endblock %}

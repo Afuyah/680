@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Login: {% endblock %}
+
+{% block content %}
+
+    <div class="container d-flex align-items-center justify-content-center vh-100">
+        <div class="login-container ">
+            <h2 class="text-center mb-4"><i class="fas fa-lock"></i> </h2>
+            <form id="loginForm">
+                <div class="form-group position-relative">
+                    <label for="username" class="sr-only">Username</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+                    </div>
+                </div>
+                <div class="form-group position-relative">
+                    <label for="password" class="sr-only">Password</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                    </div>
+                </div>
+                <div id="feedback" class="text-danger" style="display: none;"></div>
+                <button type="submit" class="btn btn-custom btn-block mt-3">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content text-center ">
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Failure Modal -->
+    <div class="modal fade" id="failureModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content modal-error text-center ">
+                <div id="errorModalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('#loginForm');
+            const usernameField = document.querySelector('#username');
+            const passwordField = document.querySelector('#password');
+            const feedback = document.querySelector('#feedback');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                
+                const data = {
+                    username: usernameField.value.trim(),
+                    password: passwordField.value.trim()
+                };
+                
+                fetch('{{ url_for("auth.login") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        // Display success modal with animation
+                        showModal('Successful! Redirecting...', 'success');
+                        setTimeout(() => window.location.href = result.redirect_url, 2000);
+                    } else {
+                        // Show inline validation feedback
+                        const errorField = result.field === 'username' ? usernameField : passwordField;
+                        errorField.classList.add('is-invalid');
+                        feedback.textContent = result.message;
+                        feedback.style.display = 'block';
+                        // Show failure modal
+                        showErrorModal('check your username and password.');
+                    }
+                })
+                .catch(error => {
+                    feedback.textContent = 'An unexpected error occurred. Please try again.';
+                    feedback.style.display = 'block';
+                });
+            });
+
+            // Hide feedback on input change
+            [usernameField, passwordField].forEach(field => {
+                field.addEventListener('input', () => {
+                    field.classList.remove('is-invalid');
+                    feedback.style.display = 'none';
+                });
+            });
+            
+            // Success modal
+            function showModal(message) {
+                const modalContent = document.querySelector('#modalContent');
+                modalContent.innerHTML = `<i class="fas fa-lock-open animated"></i><p>${message}</p>`;
+                $('#successModal').modal('show');
+            }
+
+            // Failure modal
+            function showErrorModal(message) {
+                const errorModalContent = document.querySelector('#errorModalContent');
+                errorModalContent.innerHTML = `<i class="fas fa-times animated shake"></i><p>${message}</p>`;
+                $('#failureModal').modal('show');
+            }
+        });
+    </script>
+{% endblock %}

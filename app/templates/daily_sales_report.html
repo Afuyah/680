@@ -1,0 +1,205 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+
+<h4 class="mb-4 text-center">Sales Reports</h4>
+
+    <!-- Date Range Filter Form -->
+    <form method="get" action="{{ url_for('sales.filter_sales_report') }}" class="mb-4 text-center">
+        <div class="input-group mb-3 justify-content-center">
+            <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required aria-label="Start Date">
+            <span class="input-group-text">to</span>
+            <input type="date" name="end_date" class="form-control" value="{{ end_date }}" required aria-label="End Date">
+            <button type="submit" class="btn btn-gradient ms-2" aria-label="Get Filtered Sales Report">Get Filtered Report</button>
+        </div>
+    </form>
+    <div id="dateFeedback" class="alert alert-danger d-none" role="alert"></div>
+
+    <!-- Daily Sales Report Form -->
+    <form method="get" action="{{ url_for('sales.daily_sales_report') }}" class="mb-4 text-center">
+        <div class="input-group mb-3 justify-content-center">
+            <input type="date" name="date" class="form-control" value="{{ today.strftime('%Y-%m-%d') }}" required aria-label="Date for Daily Report">
+            <button type="submit" class="btn btn-gradient ms-2" aria-label="Get Daily Sales Report">Get Daily Report</button>
+        </div>
+    </form>
+
+    <!-- Sales Summary -->
+    <div class="summary mb-4 d-flex flex-wrap justify-content-around">
+        <div class="card summary-card">
+            <h6>Total Sales</h6>
+            <p class="fs-4">Ksh {{ total_sales }}</p>
+        </div>
+        
+        <div class="card summary-card">
+            <h6>Daily Profit</h6>
+            <p class="fs-4">Ksh {{ daily_profit }}</p>
+        </div>
+        <div class="card summary-card">
+            <h6> via M-Pesa</h6>
+            <p class="fs-4">Ksh {{ mpesa_total }}</p>
+        </div>
+        <div class="card summary-card">
+            <h6> On Credit</h6>
+            <p class="fs-4">Ksh {{ credit_total }}</p>
+        </div>
+    </div>
+
+    {% if most_sold_item %}
+        <div class="alert alert-info text-center mt-3">
+            Most Sold Item: <strong>{{ most_sold_item }}</strong> ({{ most_sold_quantity }} sold)
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center mt-3">
+            No items sold for the selected date.
+        </div>
+    {% endif %}
+
+    <!-- Sales Data Table -->
+    {% if sales %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" id="salesTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Payment Method</th>
+                        <th>Items</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td>{{ sale.id }}</td>
+                        <td>{{ sale.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>Ksh {{ sale.total }}</td>
+                        <td>{{ sale.payment_method }}</td>
+                        <td>
+                            <ul class="list-unstyled">
+                                {% for item in sale.cart_items %}
+                                <li>
+                                    {{ item.product.name }} - {{ item.quantity }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No sales data found for the selected date range.
+        </div>
+    {% endif %}
+
+<!-- Include external CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize DataTable
+    $('#salesTable').DataTable({
+        "pagingType": "full_numbers",
+        "language": {
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "No entries available",
+            "search": "Search:",
+            "zeroRecords": "No matching records found"
+        }
+    });
+
+    // Date validation
+    $('form').on('submit', function() {
+        const startDate = new Date($('input[name="start_date"]').val());
+        const endDate = new Date($('input[name="end_date"]').val());
+
+        if (endDate < startDate) {
+            $('#dateFeedback').text("End date must be greater than or equal to start date.").removeClass('d-none');
+            return false; // Prevent form submission
+        } else {
+            $('#dateFeedback').addClass('d-none'); // Hide feedback
+        }
+    });
+});
+</script>
+
+<style>
+    body {
+        background-color: #f0f4f8;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+
+    h4 {
+        color: #343a40;
+        font-weight: 600;
+        margin-bottom: 30px;
+    }
+
+    .summary {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+    }
+
+    .summary-card {
+        background: linear-gradient(90deg, #007bff, #00d4ff);
+        color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        flex: 1 1 calc(20% - 20px); /* Adjust for 5 cards */
+        margin: 10px;
+        transition: transform 0.3s;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .summary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .table {
+        margin-top: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .table th {
+        background-color: #007bff;
+        color: white;
+        text-transform: uppercase;
+        font-size: 0.9em;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    .btn-gradient {
+        background: linear-gradient(90deg, #007bff, #00d4ff);
+        color: white;
+        border: none;
+        transition: background 0.3s;
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #0056b3, #009bbf);
+    }
+
+    @media (max-width: 768px) {
+        .summary-card {
+            flex: 1 1 100%;
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}

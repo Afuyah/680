@@ -1,0 +1,29 @@
+
+
+{% extends 'admin_base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+<input type="date" id="datePicker" />
+<button id="fetchExpenditure">Get Total Expenditure</button>
+<div id="expenditureResult"></div>
+
+<script>
+    document.getElementById('fetchExpenditure').onclick = function() {
+        const selectedDate = document.getElementById('datePicker').value;
+
+        fetch(`/api/total_daily_expenditure?date=${selectedDate}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('expenditureResult').innerText =
+                        `Total Expenditure on ${data.date}: Ksh ${data.total_expenditure}`;
+                } else {
+                    document.getElementById('expenditureResult').innerText = data.error;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching expenditure:', error);
+            });
+    };
+</script>
+{%% endblock }

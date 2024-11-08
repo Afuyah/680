@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}Expenses{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Expenses</h2>
+
+    <div class="filter-section mb-4">
+        <label for="filter-date" class="form-label">View by Date:</label>
+        <input type="date" id="filter-date" class="form-control" onchange="fetchExpenses()">
+    </div>
+
+    <button class="btn btn-primary mb-4" onclick="toggleAddExpenseModal()">Add Expense</button>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover" id="expenses-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Expenses will be populated here via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for adding daily expense -->
+<div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addExpenseModalLabel">Add Expense</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger d-none" id="error-message"></div>
+                <div class="alert alert-success d-none" id="success-message"></div>
+
+                <form id="addExpenseForm" onsubmit="submitExpense(event)">
+                    <div class="mb-3">
+                        <label for="expenseDescription" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="expenseDescription" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="expenseAmount" class="form-label">Amount (Ksh)</label>
+                        <input type="number" class="form-control" id="expenseAmount" min="0" step="0.01" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Add Expense</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    // Display success or error messages
+    function displayMessage(type, text) {
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+        
+        if (type === 'error') {
+            errorMessage.classList.remove('d-none');
+            errorMessage.textContent = text;
+            successMessage.classList.add('d-none');
+        } else if (type === 'success') {
+            successMessage.classList.remove('d-none');
+            successMessage.textContent = text;
+            errorMessage.classList.add('d-none');
+        }
+    }
+
+    // Fetch and display expenses with date filter
+    function fetchExpenses() {
+        const dateFilter = document.getElementById('filter-date').value;
+        fetch(`/expense/api/expenses?date=${dateFilter}`)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('expenses-table').querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                data.forEach(expense => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${expense.description}</td>
+                        <td>Ksh ${parseFloat(expense.amount).toFixed(2)}</td>
+                        <td>${expense.category || 'Daily Expenses'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching expenses:', error);
+                displayMessage('error', "Could not fetch expenses. Please try again later.");
+            });
+    }
+
+    // Toggle the add expense modal
+    function toggleAddExpenseModal() {
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        if (errorMessage) {
+            errorMessage.classList.add('d-none');  // Hide error message
+        }
+        if (successMessage) {
+            successMessage.classList.add('d-none'); // Hide success message
+        }
+
+        $('#addExpenseModal').modal('toggle');
+    }
+// Handle daily expense submission
+// Handle daily expense submission
+function submitExpense(event) {
+    event.preventDefault();
+
+    const description = document.getElementById('expenseDescription').value.trim();
+    const amount = parseFloat(document.getElementById('expenseAmount').value); // Get the raw input value
+
+    // Validation check
+    if (!description || isNaN(amount) || amount <= 0) {
+        alert("Please provide a valid description and amount.");
+        return;
+    }
+
+    // Send POST request to add the expense
+    fetch('/expense/api/add_daily_expense', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description, amount }) // Send as a number
+    })
+    .then(response => {
+        if (!response.ok) {
+            // Handle non-200 responses
+            return response.json().then(errData => {
+                throw new Error(errData.error || "Failed to add expense.");
+            });
+        }
+        return response.json(); // Process the response as JSON
+    })
+    .then(data => {
+        // Success message handling
+        alert(data.message); // Show success message
+        $('#addExpenseModal').modal('hide'); // Close the modal
+        document.getElementById('addExpenseForm').reset(); // Reset the form
+        fetchExpenses(); // Refresh expenses after adding
+    })
+    .catch(error => {
+        console.error('Error adding daily expense:', error);
+        alert('Failed to add daily expense: ' + error.message); // Show error message
+    });
+}
+    // Initial fetch of expenses
+    fetchExpenses();
+</script>
+
+
+<style>
+    h2 {
+        color: #343a40;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .filter-section {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .table-responsive {
+        margin-top: 20px;
+    }
+
+    .table th {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .alert {
+        margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .filter-section {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .filter-section label {
+            margin-bottom: 5px;
+        }
+    }
+</style>
+{% endblock %}

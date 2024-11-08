@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nawiri Admin Dashboard">
+    <meta name="keywords" content="Admin, Dashboard, Sales, Inventory">
+    <title>{% block title %}680 Admin Dashboard{% endblock %}</title>
+
+    <!-- Bootstrap, FontAwesome, and Custom CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+        
+         body {
+        background-color: #f0f4f8;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Toggle Button for Mobile -->
+    <div class="sidebar-toggle d-md-none" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <h3>680 Phone Repair</h3>
+        <a href="{{ url_for('auth.admin_dashboard') }}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        
+        <a href="{{ url_for('stock.products') }}"><i class="fas fa-box"></i> Product Management</a>
+        <a href="{{ url_for('stock.categories') }}"><i class="fas fa-tags"></i> Manage Categories</a>
+        <a href="{{ url_for('stock.update_stock_page') }}"><i class="fas fa-dollar-sign"></i> Prices Updates</a>
+        <a href="{{ url_for('sales.daily_sales_report') }}"><i class="fas fa-chart-line"></i> Daily Sales Reports</a>
+        <a href="{{ url_for('sales.monthly_sales_report') }}" class="nav-link"><i class="fas fa-calendar-alt"></i> Monthly Sales Report</a>
+        
+        <a href="{{ url_for('stock.stock_logs') }}" class="nav-link"><i class="fas fa-file-alt"></i> View Stock Logs</a>
+        <a href="{{ url_for('auth.user_management') }}"><i class="fas fa-user-cog"></i> User Management</a>
+        <a class="dropdown-item" href="{{ url_for('auth.change_password') }}"><i class="fas fa-lock"></i> Change Password</a>
+        <hr style="border-color: #6c757d; margin: 10px 0;">
+        <a href="{{ url_for('auth.logout') }}" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="container mt-4">
+            {% block content %}
+            <!-- Page-specific content goes here -->
+            {% endblock %}
+        </div>
+
+        <!-- Footer Section -->
+        <footer>
+            &copy; {{ current_year }} 680 Phone Repair. All rights reserved.
+        </footer>
+    </div>
+
+    {% block extra_js %}
+    <!-- jQuery, Bootstrap, and DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+
+    <!-- JavaScript for Sidebar Toggle -->
+    <script>
+        $(document).ready(function() {
+            const sidebar = $('#sidebar');
+            const sidebarToggle = $('#sidebarToggle');
+
+            sidebarToggle.on('click', function() {
+                sidebar.toggleClass('sidebar-hidden');
+                $('body').toggleClass('sidebar-visible');
+            });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

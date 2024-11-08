@@ -1,0 +1,138 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+
+
+    <h3 class="text-center font-weight-bold text-primary mb-4">Categories</h3>
+    <div class="text-right mb-3">
+        <a href="{{ url_for('stock.new_category') }}" class="btn btn-primary">New Category</a>
+    </div>
+    
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover table-bordered" id="categoryTable">
+            <thead class="thead-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td class="category-name">{{ category.name }}</td>
+                    <td class="category-actions">
+                        <a href="{{ url_for('stock.edit_category', id=category.id) }}" class="btn btn-warning btn-sm rounded-pill">Edit</a>
+                        <form action="{{ url_for('stock.delete_category', id=category.id) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm rounded-pill" onclick="return confirm('Are you sure you want to delete this category?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+<!-- Custom CSS for Categories Page -->
+<style>
+    /* Heading Styling */
+    h3 {
+        font-size: 1.75rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+    .btn-warning {
+        color: #fff;
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+        border-color: #d39e00;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    /* Table Styling */
+    .table {
+        background-color: #fff;
+    }
+    .table thead {
+        background-color: #007bff;
+        color: #fff;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+    .table td, .table th {
+        vertical-align: middle;
+        text-align: center;
+    }
+    .table th {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    /* DataTable Customization */
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #ced4da;
+        border-radius: 20px;
+        padding: 5px 15px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.4em 0.8em;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #007bff;
+        color: #fff !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #007bff;
+        color: #fff !important;
+        border-radius: 4px;
+    }
+</style>
+
+<!-- Include jQuery and DataTables JS/CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Initialize DataTables
+    $('#categoryTable').DataTable({
+        searching: true, // Enable search
+        paging: true, // Enable pagination
+        ordering: false, // Disable initial ordering
+        language: {
+            searchPlaceholder: "Search categories...",
+            search: ""
+        }
+    });
+});
+</script>
+
+{% endblock %}

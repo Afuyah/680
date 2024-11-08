@@ -1,0 +1,185 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+
+    <h3 class="text-center font-weight-bold text-primary mb-4">Product Inventory</h3>
+
+    <div class="d-flex justify-content-between mb-3">
+        <a href="{{ url_for('stock.new_product') }}" class="btn btn-primary shadow-sm rounded-pill">Add New Product</a>
+        <div class="form-inline">
+            <label for="stockFilter" class="mr-2 font-weight-bold">Filter by Stock:</label>
+            <select id="stockFilter" class="custom-select shadow-sm">
+                <option value="all">All</option>
+                <option value="low">Low Stock</option>
+                <option value="medium">Medium Stock</option>
+                <option value="high">High Stock</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover table-bordered" id="productTable">
+            <thead class="thead-light">
+                <tr>
+                    <th>Name</th>
+                    <th>In Stock</th>
+                    <th>Cost Price</th>
+                    <th>Selling Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr class="stock-level-{% if product.stock < 10 %}low{% elif product.stock < 50 %}medium{% else %}high{% endif %}">
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td>Ksh {{ product.cost_price }}</td>
+                    <td>Ksh {{ product.selling_price }}</td>
+                    <td>
+                        <a href="{{ url_for('stock.adjust_stock', product_id=product.id) }}" 
+                           class="btn btn-sm btn-outline-primary rounded-pill shadow-sm" 
+                           data-toggle="tooltip" title="Adjust Stock">
+                           Adjust Stock
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Custom Styling for Product Page -->
+<style>
+    /* Page Title */
+    h3 {
+        font-size: 1.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Add New Product Button */
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Table and Hover Effects */
+    .table {
+        border-radius: 8px;
+        background-color: #ffffff;
+    }
+    .table thead {
+        background-color: #007bff;
+        color: #ffffff;
+    }
+    .table tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    /* Stock Level Highlighting */
+    .stock-level-low td {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    .stock-level-medium td {
+        color: #fd7e14;
+    }
+    .stock-level-high td {
+        color: #28a745;
+    }
+
+    /* DataTable Custom Styling */
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #ced4da;
+        border-radius: 20px;
+        padding: 5px 15px;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.4em 0.8em;
+        margin: 0 3px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #007bff;
+        color: #ffffff !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #007bff;
+        color: #ffffff !important;
+    }
+
+    /* Tooltip */
+    .tooltip-inner {
+        background-color: #007bff;
+        color: #ffffff;
+    }
+    .tooltip.bs-tooltip-top .arrow::before {
+        border-top-color: #007bff;
+    }
+</style>
+
+<!-- Include jQuery, DataTables, and Tooltip JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Initialize DataTable
+    const productTable = $('#productTable').DataTable({
+        searching: true,
+        paging: true, // Keep this true to allow DataTables to handle pagination
+        ordering: true,
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]], // Options for number of entries per page
+        pageLength: 10, // Set the default display length to 10
+        language: {
+            searchPlaceholder: "Search products...",
+            search: ""
+        },
+        columnDefs: [
+            { orderable: false, targets: [4] } // Disable ordering on the Action column
+        ]
+    });
+
+    // Initialize Bootstrap Tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // Stock Filter
+    $('#stockFilter').on('change', function() {
+        const filterValue = $(this).val();
+        productTable.rows().every(function() {
+            const rowNode = this.node();
+
+            if (filterValue === 'all' || 
+                (filterValue === 'low' && $(rowNode).hasClass('stock-level-low')) ||
+                (filterValue === 'medium' && $(rowNode).hasClass('stock-level-medium')) ||
+                (filterValue === 'high' && $(rowNode).hasClass('stock-level-high'))) {
+                $(rowNode).show(); // Show row if it matches the filter
+            } else {
+                $(rowNode).hide(); // Hide row if it doesn't match
+            }
+        });
+
+        // Redraw the table after filtering
+        productTable.draw();
+    });
+
+    // Handle "All" length menu selection
+    $('#productTable_length select').on('change', function() {
+        const perPage = $(this).val();
+        // Set the DataTable page length
+        productTable.page.len(perPage).draw();
+    });
+});
+</script>
+
+
+{% endblock %}

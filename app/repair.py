@@ -15,17 +15,17 @@ def list_repairs():
     """List all repairs with filters for status."""
     logger.info(f"User {current_user.username} accessed repair list.")
     status_filter = request.args.get('status', 'active')
-    
+
     try:
         query = RepairService.query
         
         # Apply filters based on the status parameter
         if status_filter == 'pending':
-            query = query.filter(RepairService.progress_status == 'Pending')
+            query = query.filter(RepairService.progress_status == RepairStatus.PENDING)
         elif status_filter == 'completed':
-            query = query.filter(RepairService.progress_status == 'Completed')
+            query = query.filter(RepairService.progress_status == RepairStatus.COMPLETED)
         else:  # Default to showing only active (non-completed) jobs
-            query = query.filter(RepairService.progress_status != 'Completed')
+            query = query.filter(RepairService.progress_status != RepairStatus.COMPLETED)
         
         repairs = query.all()
         return render_template('repair/repairs.html', repairs=repairs, status_filter=status_filter)

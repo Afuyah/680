@@ -1,1 +1,67 @@
 2024-11-06 15:54:41,739 - WARNING - 404 Error: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again., attempted URL: http://127.0.0.1:5000/favicon.ico
+2024-11-09 00:05:07,536 - WARNING - 404 Error: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again., attempted URL: http://127.0.0.1:5000/favicon.ico
+2024-11-09 00:36:51,803 - WARNING - Login failed for username: admin. Invalid credentials.
+2024-11-09 00:37:30,275 - ERROR - Exception on /auth/login [GET]
+Traceback (most recent call last):
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/app.py", line 2077, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/app.py", line 1525, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/app/auth.py", line 54, in login
+    return render_template('auth/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/templating.py", line 148, in render_template
+    return _render(
+           ^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/templating.py", line 128, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/jinja2/environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/jinja2/environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/bha/Desktop/680/app/templates/auth/login.html", line 1, in top-level template code
+    {% extends 'base.html' %}
+  File "/home/bha/Desktop/680/app/templates/base.html", line 102, in top-level template code
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('repair.repairs') }}">Suppliers</a></li>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/helpers.py", line 336, in url_for
+    return appctx.app.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/helpers.py", line 323, in url_for
+    rv = url_adapter.build(
+         ^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/werkzeug/routing.py", line 2315, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.BuildError: Could not build url for endpoint 'repair.repairs'. Did you mean 'repair.list_repairs' instead?
+2024-11-09 00:37:30,319 - ERROR - Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2024-11-09 00:38:13,800 - ERROR - Exception on /repair/repairs [GET]
+Traceback (most recent call last):
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/app.py", line 2077, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/app.py", line 1525, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/680/lib/python3.11/site-packages/flask_login/utils.py", line 277, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bha/Desktop/680/app/repair.py", line 20, in list_repairs
+    query = Repair.query
+            ^^^^^^
+NameError: name 'Repair' is not defined
+2024-11-09 00:38:13,825 - ERROR - Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.

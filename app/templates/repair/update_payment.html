@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Update Payment Status for Repair: {{ repair.reference_number }}</h2>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <form action="{{ url_for('repair.update_payment', repair_id=repair.id) }}" method="POST">
+                <div class="mb-3">
+                    <label for="payment_status" class="form-label">Payment Status</label>
+                    <select class="form-select" id="payment_status" name="payment_status" required>
+                        <option value="UNPAID" {% if repair.payment_status == 'UNPAID' %}selected{% endif %}>Unpaid</option>
+                        <option value="PAID" {% if repair.payment_status == 'PAID' %}selected{% endif %}>Paid</option>
+                        <option value="OVERDUE" {% if repair.payment_status == 'OVERDUE' %}selected{% endif %}>Overdue</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update Payment Status</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{{ url_for('repair.view_repair', repair_id=repair.id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Repair Details
+        </a>
+    </div>
+</div>
+{% endblock %}

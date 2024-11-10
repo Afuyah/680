@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Repair Details</h2>
+
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-tools"></i> Repair for {{ repair.item_model }} 
+                <span class="badge bg-secondary float-end">Ref: {{ repair.reference_number }}</span>
+            </h4>
+        </div>
+
+        <div class="card-body">
+            <!-- Repair Details Section -->
+            <div class="table-responsive">
+                <table class="table table-borderless mb-0">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="fw-bold text-muted">Customer Name:</th>
+                            <td>{{ repair.customer_name }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="fw-bold text-muted">Item Model:</th>
+                            <td>{{ repair.item_model }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="fw-bold text-muted">Service Type:</th>
+                            <td>{{ repair.service_type }}</td>
+                        </tr>
+                        <tr>
+    <th scope="row" class="fw-bold text-muted">Amount Due:</th>
+    <td><span class="text-success">Ksh {{ "{:.2f}".format(repair.amount_due) }}</span></td>
+</tr>
+
+                        <tr>
+                            <th scope="row" class="fw-bold text-muted">Progress Status:</th>
+                            <td>{{ repair.progress_status.value if repair.progress_status else 'N/A' }}</td> <!-- Direct value, no .value needed -->
+                        </tr>
+                        <tr>
+                            <th scope="row" class="fw-bold text-muted">Payment Status:</th>
+                            <td>{{ repair.payment_status.value if repair.payment_status else 'N/A' }}</td> 
+                        </tr>
+                        <tr>
+                            <th scope="row" class="fw-bold text-muted">Date Brought In:</th>
+                            <td>{{ repair.created_at.strftime('%Y-%m-%d') if repair.created_at else 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="fw-bold text-muted">Expected Collection Date:</th>
+                            <td>{{ repair.expected_collection_date.strftime('%Y-%m-%d') if repair.expected_collection_date else 'TBD' }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="fw-bold text-muted">Added By:</th>
+                            <td>{{ repair.added_by_user.username }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Conditional Buttons for Pending Jobs -->
+            <div class="mt-4 text-center">
+                {% if repair.progress_status != 'Completed' %}
+                    <!-- Update Status button -->
+                    <a href="{{ url_for('repair.update_status', repair_id=repair.id) }}" class="btn btn-primary me-2" title="Update Repair Status">
+                        <i class="fas fa-sync-alt"></i> Update Status
+                    </a>
+                    
+                    <!-- Update Payment button -->
+                    <a href="{{ url_for('repair.update_payment', repair_id=repair.id) }}" class="btn btn-warning" title="Update Payment">
+                        <i class="fas fa-money-bill-wave"></i> Update Payment
+                    </a>
+                {% else %}
+                    <p class="text-success mt-4"><i class="fas fa-check-circle"></i> This repair job is marked as completed.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Repair List Button -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('repair.list_repairs') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Repair List
+        </a>
+    </div>
+</div>
+
+<!-- Custom Styling -->
+<style>
+    .table th {
+        width: 30%;
+    }
+    .badge {
+        font-size: 0.9em;
+    }
+</style>
+{% endblock %}

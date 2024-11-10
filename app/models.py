@@ -12,6 +12,7 @@ import enum
 import logging
 
 from sqlalchemy import Numeric, Integer, Float, ForeignKey, String, DateTime, JSON
+from sqlalchemy.dialects.postgresql import NUMERIC
 
 
 
@@ -28,7 +29,19 @@ class UnitType(enum.Enum):
 class Role(Enum):
     ADMIN = 'admin'
     CASHIER = 'cashier'
-import enum
+
+
+class RepairStatus(Enum):
+    PENDING = 'Pending'
+    IN_PROGRESS = 'In Progress'
+    FINAL_STAGES = 'Final Stages'
+    COMPLETED = 'Completed'
+    COLLECTED = 'Collected'
+
+class PaymentStatus(Enum):
+    PAID = 'Paid'
+    UNPAID = 'Unpaid'
+
 
 class AdjustmentType(enum.Enum):
     addition = "addition"  # Adding stock
@@ -340,3 +353,50 @@ User.stock_logs = db.relationship('StockLog', back_populates='user')
 
 
 
+class RepairService(db.Model):
+    __tablename__ = 'repair_services'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    reference_number = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    customer_name = db.Column(db.String(200), nullable=False)
+    item_model = db.Column(db.String(200), nullable=False)
+    service_type = db.Column(db.String(200), nullable=False)
+    date_brought = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    expected_collection_date = db.Column(db.DateTime, nullable=True)
+    amount_due = db.Column(NUMERIC(10, 2), nullable=False, default=0.00)
+    progress_status = db.Column(SQLAlchemyEnum(RepairStatus), default=RepairStatus.PENDING, nullable=False)
+    payment_status = db.Column(SQLAlchemyEnum(PaymentStatus), default=PaymentStatus.UNPAID, nullable=False)
+    added_by_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    tracking_link = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, default=func.now())
+    added_by_user = db.relationship('User', backref='repair_services')
+
+    def generate_tracking_link(self):
+        """Generate a unique tracking URL for the repair service."""
+        base_url = "https://yourdomain.com/track_repair"  # Replace with actual domain
+        self.tracking_link = f"{base_url}/{self.reference_number}"
+
+    def serialize(self):
+        """Serialize repair service for API or frontend display."""
+        return {
+            'id': self.id,
+            'reference_number': self.reference_number,
+            'customer_name': self.customer_name,
+            'item_model': self.item_model,
+            'service_type': self.service_type,
+            'date_brought': self.date_brought.strftime("%Y-%m-%d %H:%M:%S"),
+            'expected_collection_date': self.expected_collection_date.strftime("%Y-%m-%d %H:%M:%S") if self.expected_collection_date else None,
+            'amount_due': str(self.amount_due),
+            'progress_status': self.progress_status.value,
+            'payment_status': self.payment_status.value,
+            'tracking_link': self.tracking_link,
+            'added_by': self.added_by_user.username  # Get username of the user who added the entry
+        }
+
+    @classmethod
+    def create_reference_number(cls):
+        """Generate a unique reference number for the repair."""
+        return f"SRV-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+
+    def __repr__(self):
+        return f'<RepairService {self.reference_number} - {self.customer_name}>'

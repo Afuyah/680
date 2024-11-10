@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-uppercase mb-4 text-primary">Active Repair Jobs</h2>
+
+    <div class="d-flex justify-content-between mb-4">
+        <!-- Button to view completed jobs -->
+        <a href="{{ url_for('repair.list_repairs', status='completed') }}" class="btn btn-secondary">
+            <i class="fas fa-check-circle"></i> View Completed Jobs
+        </a>
+
+        <!-- Button to add a new repair -->
+        <a href="{{ url_for('repair.add_repair') }}" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Add New Repair
+        </a>
+    </div>
+
+    <!-- Table listing active repair jobs -->
+    <div class="table-responsive">
+        <table id="repairTable" class="table table-hover table-bordered align-middle" style="width:100%">
+            <thead class="table-light">
+                <tr>
+                    <th>Reference No.</th>
+                    <th>Customer</th>
+                    <th>Item Model</th>
+                    <th>Service Type</th>
+                    <th>Amount (Ksh)</th>
+                    <th>Progress Status</th>
+                    <th>Payment Status</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for repair in repairs %}
+                {% if repair.progress_status != 'Completed' %}
+                <tr class="{% if repair.progress_status == 'Pending' %}table-warning{% elif repair.progress_status == 'In Progress' %}table-info{% elif repair.progress_status == 'Overdue' %}table-danger{% endif %}">
+                    <td>{{ repair.reference_number }}</td>
+                    <td>{{ repair.customer_name }}</td>
+                    <td>{{ repair.item_model }}</td>
+                    <td>{{ repair.service_type }}</td>
+                    <td>Ksh {{ repair.amount_due | default(0) | round(2) }}</td>
+                    <td>{{ repair.progress_status.value }}</td>
+                    <td>{{ repair.payment_status.value }}</td>
+                    <td class="text-center">
+   <!-- Add margin between buttons -->
+<a href="{{ url_for('repair.view_repair', repair_id=repair.id) }}" class="btn btn-info btn-sm me-2" title="View Details">
+    <i class="fas fa-eye"></i> 
+</a>
+
+<a href="{{ url_for('repair.update_status', repair_id=repair.id) }}" class="btn btn-primary btn-sm" title="Update Status">
+    <i class="fas fa-sync-alt"></i> 
+</a>
+
+
+<a href="{{ url_for('repair.update_payment', repair_id=repair.id) }}" class="btn btn-warning btn-sm" title="Update Payment">
+    <i class="fas fa-money-bill-wave"></i> 
+</a>
+
+</td>
+
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Include DataTables JavaScript -->
+<script>
+    $(document).ready(function() {
+        $('#repairTable').DataTable({
+            responsive: true,
+            pageLength: 10,
+            order: [[0, 'asc']],
+            columnDefs: [
+                { targets: [7], orderable: false },  // Disable sorting on the action column
+                { targets: [4], render: $.fn.dataTable.render.number(',', '.', 2, 'Ksh ') }  // Format Amount
+            ],
+            language: {
+                paginate: {
+                    previous: "<i class='fas fa-angle-left'></i>",
+                    next: "<i class='fas fa-angle-right'></i>"
+                }
+            },
+            dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                 "<'row'<'col-sm-12'tr>>" +
+                 "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+        });
+    });
+</script>
+
+<!-- Custom Styling -->
+<style>
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    .badge {
+        font-size: 0.85em;
+    }
+    .table-warning {
+        background-color: #fff3cd;
+    }
+    .table-info {
+        background-color: #d1ecf1;
+    }
+    .table-danger {
+        background-color: #f8d7da;
+    }
+</style>
+{% endblock %}
